@@ -3,7 +3,7 @@ package com.example.mymvp
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 
-class Model(mqttHelper: MqttHelper)
+class Model(val mqttHelper: MqttHelper)
 {
     fun setLedStatus(status: Boolean): Completable
     {
