@@ -5,14 +5,12 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
-class Presenter (private val model: Model)
-{
+class Presenter (private val model: Model) {
     private var view: Viewable? = null
 
     private val disposeBag = CompositeDisposable()
 
-    init
-    {
+    init {
         disposeBag.add(
             model.mqttHelper.connect()
                 .subscribeOn(Schedulers.newThread())
@@ -49,6 +47,23 @@ class Presenter (private val model: Model)
                     },
                     {
                         Log.e("IWTSI", "Not connected: $it")
+                    }
+                )
+        )
+    }
+
+    fun sendMsg()       // TODO: this method is just for test, I will remove it later
+    {
+        disposeBag.add(
+            model.mqttHelper.publishMessages("It's me!")
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        Log.i("IWTSI", "Published")
+                    },
+                    {
+                        Log.i("IWTSI", "Error: $it")
                     }
                 )
         )

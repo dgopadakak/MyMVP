@@ -36,7 +36,6 @@ class MqttHelper(context: Context)
                 val mqttConnectOptions = MqttConnectOptions()
                 mqttConnectOptions.userName = USERNAME
                 mqttConnectOptions.password = PASSWD.toCharArray()
-                //mqttConnectOptions.sslProperties = com.ibm.ssl.protocol.SSL
 
                 val token = mqttAndroidClient.connect(mqttConnectOptions)
                 token.actionCallback = object : IMqttActionListener
@@ -71,18 +70,15 @@ class MqttHelper(context: Context)
                     override fun onSuccess(asyncActionToken: IMqttToken)
                     {
                         subscriber.onComplete()
-                        // Give your callback on Subscription here
                     }
                     override fun onFailure(asyncActionToken: IMqttToken, e: Throwable)
                     {
                         subscriber.onError(e)
-                        // Give your subscription failure callback here
                     }
                 })
             } catch (e: MqttException)
             {
                 subscriber.onError(e)
-                // Give your subscription failure callback here
             }
         }
     }
@@ -95,7 +91,7 @@ class MqttHelper(context: Context)
                 override fun connectionLost(cause: Throwable)
                 {
                     connectionStatus = false
-                    subscriber.onComplete()     // TODO: onComplete или onError?
+                    subscriber.onComplete()     // TODO: onComplete или onError? В строке 110 (fun deliveryComplete) так же
                 }
                 override fun messageArrived(topic: String, message: MqttMessage)
                 {
@@ -103,8 +99,6 @@ class MqttHelper(context: Context)
                     {
                         val data = String(message.payload, charset("UTF-8"))
                         subscriber.onNext(data)
-                        // data is the desired received message
-                        // Give your callback on message received here
                     }
                     catch (e: Exception)
                     {
@@ -113,10 +107,33 @@ class MqttHelper(context: Context)
                 }
                 override fun deliveryComplete(token: IMqttDeliveryToken)
                 {
-                    // Acknowledgement on delivery complete
-                    TODO()          // TODO: onComplete или onError?
+                    subscriber.onComplete()     // Да, тут (см. стр. 94)
                 }
             })
+        }
+    }
+
+    fun publishMessages(data: String): Completable  // TODO: после отправки не работает прием сообщений, разобраться
+    {
+        return Completable.create { subscriber ->
+            val encodedPayload : ByteArray
+            try
+            {
+                encodedPayload = data.toByteArray(charset("UTF-8"))
+                val message = MqttMessage(encodedPayload)
+                message.qos = QOS
+                message.isRetained = false
+                mqttAndroidClient.publish(TOPIC, message)
+                subscriber.onComplete()
+            }
+            catch (e: Exception)
+            {
+                subscriber.onError(e)
+            }
+            catch (e: MqttException)
+            {
+                subscriber.onError(e)
+            }
         }
     }
 }
