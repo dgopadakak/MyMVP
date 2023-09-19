@@ -27,4 +27,9 @@ class MainActivity : AppCompatActivity(), Viewable
     {
         TODO("Not yet implemented")
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter.detachView()
+    }
 }
