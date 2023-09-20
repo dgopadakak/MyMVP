@@ -137,4 +137,30 @@ class MqttHelper(context: Context)
             }
         }
     }
+
+    fun disconnect(): Completable
+    {
+        return Completable.create { subscriber ->
+            try
+            {
+                val disconnectToken = mqttAndroidClient.disconnect()
+                disconnectToken.actionCallback = object : IMqttActionListener
+                {
+                    override fun onSuccess(asyncActionToken: IMqttToken)
+                    {
+                        connectionStatus = false
+                        subscriber.onComplete()
+                    }
+                    override fun onFailure(asyncActionToken: IMqttToken, e: Throwable)
+                    {
+                        subscriber.onError(e)
+                    }
+                }
+            }
+            catch (e: MqttException)
+            {
+                subscriber.onError(e)
+            }
+        }
+    }
 }
