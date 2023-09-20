@@ -1,8 +1,7 @@
 package com.example.mymvp
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), Viewable
@@ -15,8 +14,6 @@ class MainActivity : AppCompatActivity(), Viewable
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         appComponent.inject(this)
-
-        findViewById<Button>(R.id.buttonTest).setOnClickListener { presenter.sendMsg() }
 
         presenter.attachView(this)
     }
