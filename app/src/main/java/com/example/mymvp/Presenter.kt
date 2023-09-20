@@ -55,7 +55,7 @@ class Presenter (private val model: Model) {
     fun sendMsg()       // TODO: this method is just for test, I will remove it later
     {
         disposeBag.add(
-            model.mqttHelper.publishMessages("It's me!")
+            model.mqttHelper.publishMessages("home", "It's me!")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

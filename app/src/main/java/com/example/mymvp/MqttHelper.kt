@@ -20,7 +20,7 @@ class MqttHelper(context: Context)
         const val USERNAME = "dgopadakak"
         const val PASSWD = "Ww12345678910"
         const val CLIENT_ID = "phone"
-        const val TOPIC = "home"
+        const val TOPIC = "home/#"
         const val QOS = 2
     }
 
@@ -83,7 +83,7 @@ class MqttHelper(context: Context)
         }
     }
 
-    fun receiveMessages(): Observable<String>
+    fun receiveMessages(): Observable<Pair<String, String>>
     {
         return Observable.create { subscriber ->
             mqttAndroidClient.setCallback(object : MqttCallback
@@ -91,14 +91,14 @@ class MqttHelper(context: Context)
                 override fun connectionLost(cause: Throwable)
                 {
                     connectionStatus = false
-                    subscriber.onComplete()     // TODO: onComplete или onError? В строке 110 (fun deliveryComplete) так же
+                    subscriber.onComplete()     // TODO: подумать onComplete или onError?
                 }
                 override fun messageArrived(topic: String, message: MqttMessage)
                 {
                     try
                     {
                         val data = String(message.payload, charset("UTF-8"))
-                        subscriber.onNext(data)
+                        subscriber.onNext(Pair(topic, data))
                     }
                     catch (e: Exception)
                     {
@@ -107,13 +107,14 @@ class MqttHelper(context: Context)
                 }
                 override fun deliveryComplete(token: IMqttDeliveryToken)
                 {
-                    subscriber.onComplete()     // Да, тут (см. стр. 94)
+                    // Тут мы получаем подтверждение, что сообщение, отправленное
+                    // методом publishMessages (следующий метод), доставлено
                 }
             })
         }
     }
 
-    fun publishMessages(data: String): Completable  // TODO: после отправки не работает прием сообщений, разобраться
+    fun publishMessages(topic: String, data: String): Completable
     {
         return Completable.create { subscriber ->
             val encodedPayload : ByteArray
@@ -123,7 +124,7 @@ class MqttHelper(context: Context)
                 val message = MqttMessage(encodedPayload)
                 message.qos = QOS
                 message.isRetained = false
-                mqttAndroidClient.publish(TOPIC, message)
+                mqttAndroidClient.publish(topic, message)
                 subscriber.onComplete()
             }
             catch (e: Exception)
