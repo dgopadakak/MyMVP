@@ -4,10 +4,14 @@ import com.example.mymvp.model.Model
 import com.example.mymvp.view.Viewable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 
-class Presenter (private val model: Model) {
+class Presenter (private val model: Model)
+{
     private var view: Viewable? = null
     private val disposeBag = CompositeDisposable()
-    init {
+
+    fun attachView(view: Viewable)
+    {
+        this.view = view
         disposeBag.add(
             model.connect()
                 .subscribe(
@@ -16,7 +20,7 @@ class Presenter (private val model: Model) {
                             model.subscribeTopics()
                                 .subscribe(
                                     {
-                                        TODO()
+                                        view.changeConnectionStatus(true)
                                     },
                                     {
                                         TODO()
@@ -31,16 +35,12 @@ class Presenter (private val model: Model) {
         )
     }
 
-    fun attachView(view: Viewable)
-    {
-        this.view = view
-    }
-
 
 
     fun detachView()
     {
         view = null
+        disposeBag.dispose()
         model.kill()
     }
 }

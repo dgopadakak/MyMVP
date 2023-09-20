@@ -20,14 +20,12 @@ class MqttHelper(context: Context)
         const val USERNAME = "dgopadakak"
         const val PASSWD = "Ww12345678910"
         const val CLIENT_ID = "phone"
-        const val TOPIC = "home/#"
+        const val TOPIC = "from/#"
         const val QOS = 2
     }
 
     private var mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(context
-        , SERVER_URI, CLIENT_ID
-    )
-    var connectionStatus = false
+        , SERVER_URI, CLIENT_ID)
 
     fun connect(): Completable
     {
@@ -43,19 +41,16 @@ class MqttHelper(context: Context)
                 {
                     override fun onSuccess(asyncActionToken: IMqttToken)
                     {
-                        connectionStatus = true
                         subscriber.onComplete()
                     }
                     override fun onFailure(asyncActionToken: IMqttToken, e: Throwable)
                     {
-                        connectionStatus = false
                         subscriber.onError(e)
                     }
                 }
             }
             catch (e: MqttException)
             {
-                connectionStatus = false
                 subscriber.onError(e)
             }
         }
@@ -89,10 +84,9 @@ class MqttHelper(context: Context)
         return Observable.create { subscriber ->
             mqttAndroidClient.setCallback(object : MqttCallback
             {
-                override fun connectionLost(cause: Throwable)
+                override fun connectionLost(e: Throwable)
                 {
-                    connectionStatus = false
-                    subscriber.onComplete()     // TODO: подумать onComplete или onError?
+                    subscriber.onError(e)
                 }
                 override fun messageArrived(topic: String, message: MqttMessage)
                 {
@@ -139,26 +133,28 @@ class MqttHelper(context: Context)
         }
     }
 
-    fun disconnect()
+    fun disconnect(): Completable
     {
-        try
-        {
-            val disconnectToken = mqttAndroidClient.disconnect()
-            disconnectToken.actionCallback = object : IMqttActionListener
+        return Completable.create { subscriber ->
+            try
             {
-                override fun onSuccess(asyncActionToken: IMqttToken)
+                val disconnectToken = mqttAndroidClient.disconnect()
+                disconnectToken.actionCallback = object : IMqttActionListener
                 {
-                    connectionStatus = false
-                }
-                override fun onFailure(asyncActionToken: IMqttToken, e: Throwable)
-                {
-                    TODO("Обдумать сценарий при ошибке отключения")
+                    override fun onSuccess(asyncActionToken: IMqttToken)
+                    {
+                        subscriber.onComplete()
+                    }
+                    override fun onFailure(asyncActionToken: IMqttToken, e: Throwable)
+                    {
+                        subscriber.onError(e)
+                    }
                 }
             }
-        }
-        catch (e: MqttException)
-        {
-            TODO("Обдумать сценарий при ошибке отключения")
+            catch (e: MqttException)
+            {
+                subscriber.onError(e)
+            }
         }
     }
 }
