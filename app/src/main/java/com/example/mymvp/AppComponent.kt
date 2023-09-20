@@ -1,6 +1,10 @@
 package com.example.mymvp
 
 import android.content.Context
+import com.example.mymvp.model.Model
+import com.example.mymvp.model.MqttHelper
+import com.example.mymvp.presenter.Presenter
+import com.example.mymvp.view.MainActivity
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module

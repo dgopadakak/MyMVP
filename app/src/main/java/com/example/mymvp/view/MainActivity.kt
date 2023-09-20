@@ -1,7 +1,10 @@
-package com.example.mymvp
+package com.example.mymvp.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mymvp.presenter.Presenter
+import com.example.mymvp.R
+import com.example.mymvp.appComponent
 import javax.inject.Inject
 
 class MainActivity : AppCompatActivity(), Viewable

@@ -1,4 +1,4 @@
-package com.example.mymvp
+package com.example.mymvp.model
 
 import android.content.Context
 import io.reactivex.rxjava3.core.Completable
@@ -25,7 +25,8 @@ class MqttHelper(context: Context)
     }
 
     private var mqttAndroidClient: MqttAndroidClient = MqttAndroidClient(context
-        , SERVER_URI, CLIENT_ID)
+        , SERVER_URI, CLIENT_ID
+    )
     var connectionStatus = false
 
     fun connect(): Completable
@@ -138,29 +139,26 @@ class MqttHelper(context: Context)
         }
     }
 
-    fun disconnect(): Completable
+    fun disconnect()
     {
-        return Completable.create { subscriber ->
-            try
+        try
+        {
+            val disconnectToken = mqttAndroidClient.disconnect()
+            disconnectToken.actionCallback = object : IMqttActionListener
             {
-                val disconnectToken = mqttAndroidClient.disconnect()
-                disconnectToken.actionCallback = object : IMqttActionListener
+                override fun onSuccess(asyncActionToken: IMqttToken)
                 {
-                    override fun onSuccess(asyncActionToken: IMqttToken)
-                    {
-                        connectionStatus = false
-                        subscriber.onComplete()
-                    }
-                    override fun onFailure(asyncActionToken: IMqttToken, e: Throwable)
-                    {
-                        subscriber.onError(e)
-                    }
+                    connectionStatus = false
+                }
+                override fun onFailure(asyncActionToken: IMqttToken, e: Throwable)
+                {
+                    TODO("Обдумать сценарий при ошибке отключения")
                 }
             }
-            catch (e: MqttException)
-            {
-                subscriber.onError(e)
-            }
+        }
+        catch (e: MqttException)
+        {
+            TODO("Обдумать сценарий при ошибке отключения")
         }
     }
 }

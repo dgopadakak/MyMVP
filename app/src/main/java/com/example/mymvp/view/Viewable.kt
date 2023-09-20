@@ -1,4 +1,4 @@
-package com.example.mymvp
+package com.example.mymvp.view
 
 interface Viewable
 {
