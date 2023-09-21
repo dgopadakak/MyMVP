@@ -45,19 +45,30 @@ class MainActivity : AppCompatActivity(), Viewable
     /**
      * Данный метод отвечает за перевод отображения в режим работы или загрузки
      */
-    override fun changeConnectionStatus(status: Boolean)
+    override fun changeConnectionStatus(statusNum: Int)
     {
-        if (status)
+        when (statusNum)
         {
-            binding.progressBar.visibility = View.INVISIBLE
+            0 -> {  // Ошибка
+                // TODO()
+                binding.progressBar.visibility = View.INVISIBLE
+                binding.timeTitleTextView.isEnabled = false
+                binding.timeValTextView.isEnabled = false
+                binding.ledChip.isEnabled = false
+            }
+            1 -> {  // Подключение
+                binding.progressBar.visibility = View.VISIBLE
+                binding.timeTitleTextView.isEnabled = false
+                binding.timeValTextView.isEnabled = false
+                binding.ledChip.isEnabled = false
+            }
+            2 -> {  // Подключено
+                binding.progressBar.visibility = View.INVISIBLE
+                binding.timeTitleTextView.isEnabled = true
+                binding.timeValTextView.isEnabled = true
+                binding.ledChip.isEnabled = true
+            }
         }
-        else
-        {
-            binding.progressBar.visibility = View.VISIBLE
-        }
-        binding.timeTitleTextView.isEnabled = status
-        binding.timeValTextView.isEnabled = status
-        binding.ledChip.isEnabled = status
     }
 
     override fun onDestroy()

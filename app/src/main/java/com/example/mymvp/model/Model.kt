@@ -15,8 +15,6 @@ class Model(private val mqttHelper: MqttHelper)
         private const val FROM_TIME_TOPIC = "from/time"
     }
     private val disposeBag = CompositeDisposable()
-    private var connectionStatus = false
-    private var subscribeStatus = false
 
     fun setLedStatus(status: Boolean): Completable
     {
@@ -90,8 +88,8 @@ class Model(private val mqttHelper: MqttHelper)
                             }
                         },
                         {
-                            connectionStatus = false
-                            subscribeStatus = false
+                            //connectionStatus = false
+                            //subscribeStatus = false
                             subscriber.onError(it)
                         }
                     )
@@ -110,8 +108,8 @@ class Model(private val mqttHelper: MqttHelper)
                             subscriber.onNext(it.second)
                         },
                         {
-                            connectionStatus = false
-                            subscribeStatus = false
+                            //connectionStatus = false
+                            //subscribeStatus = false
                             subscriber.onError(it)
                         }
                     )
@@ -127,11 +125,11 @@ class Model(private val mqttHelper: MqttHelper)
                     .subscribeOn(Schedulers.newThread())
                     .subscribe(
                         {
-                            connectionStatus = true
+                            //connectionStatus = true
                             subscriber.onComplete()
                         },
                         {
-                            connectionStatus = false
+                            //connectionStatus = false
                             subscriber.onError(it)
                         }
                     )
@@ -147,11 +145,11 @@ class Model(private val mqttHelper: MqttHelper)
                     .subscribeOn(Schedulers.newThread())
                     .subscribe(
                         {
-                            subscribeStatus = true
+                            //subscribeStatus = true
                             subscriber.onComplete()
                         },
                         {
-                            subscribeStatus = false
+                            //subscribeStatus = false
                             subscriber.onError(it)
                         }
                     )
@@ -161,18 +159,7 @@ class Model(private val mqttHelper: MqttHelper)
 
     fun kill()
     {
-        disposeBag.add(
-            mqttHelper.disconnect()
-                .subscribe(
-                    {
-                        connectionStatus = false
-                        subscribeStatus = false
-                    },
-                    {
-                        TODO()
-                    }
-                )
-        )
+        disposeBag.add(mqttHelper.disconnect().subscribe())
         disposeBag.dispose()
     }
 }
