@@ -3,4 +3,5 @@
     <string name="time_title">Время работы микроконтроллера:</string>
     <string name="time_val_default">Загрузка…</string>
     <string name="reconnect_button">Переподключиться</string>
+    <string name="led_chip">Светодиод</string>
 </resources>

@@ -12,6 +12,8 @@ class Presenter (private val model: Model)
     fun attachView(view: Viewable)
     {
         this.view = view
+
+        view.changeConnectionStatus(false)
         disposeBag.add(
             model.connect()
                 .subscribe(
@@ -35,7 +37,10 @@ class Presenter (private val model: Model)
         )
     }
 
+    fun ledChipClicked()
+    {
 
+    }
 
     fun detachView()
     {

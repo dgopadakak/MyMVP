@@ -16,17 +16,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/reconnect_button"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/progressBar" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/time_layout"
         android:layout_width="wrap_content"
@@ -37,25 +26,39 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/time_title"
+            android:id="@+id/time_title_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/time_title"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/time_val"
+            app:layout_constraintEnd_toStartOf="@+id/time_val_textView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/time_val"
+            android:id="@+id/time_val_textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:text="@string/time_val_default"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/time_title"
+            app:layout_constraintStart_toEndOf="@+id/time_title_textView"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.chip.Chip
+        android:id="@+id/led_chip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:checkable="false"
+        android:text="@string/led_chip"
+        app:checkedIcon="@android:drawable/presence_online"
+        app:checkedIconVisible="true"
+        app:chipIcon="@android:drawable/presence_invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/time_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

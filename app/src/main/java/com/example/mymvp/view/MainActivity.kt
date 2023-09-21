@@ -2,10 +2,9 @@ package com.example.mymvp.view
 
 import android.os.Bundle
 import android.view.View
-import android.widget.ProgressBar
 import androidx.appcompat.app.AppCompatActivity
-import com.example.mymvp.R
 import com.example.mymvp.appComponent
+import com.example.mymvp.databinding.ActivityMainBinding
 import com.example.mymvp.presenter.Presenter
 import javax.inject.Inject
 
@@ -13,53 +12,56 @@ class MainActivity : AppCompatActivity(), Viewable
 {
     @Inject
     lateinit var presenter: Presenter
-
-    private lateinit var progressBar: ProgressBar
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
         appComponent.inject(this)
 
-        progressBar = findViewById(R.id.progressBar)
+        binding.ledChip.setOnClickListener { presenter.ledChipClicked() }
 
         presenter.attachView(this)
     }
 
     override fun showTime(time: String)
     {
-        TODO("Not yet implemented")
+        binding.timeValTextView.text = time
     }
 
     override fun showLedStatus(status: Boolean)
     {
-        TODO("Not yet implemented")
+        binding.ledChip.isChecked = status
     }
 
+    override fun changeChipEnabled(status: Boolean)
+    {
+        binding.ledChip.isEnabled = status
+    }
+
+    /**
+     * Данный метод отвечает за перевод отображения в режим работы или загрузки
+     */
     override fun changeConnectionStatus(status: Boolean)
     {
         if (status)
         {
-            setReady()
+            binding.progressBar.visibility = View.INVISIBLE
         }
         else
         {
-            setLoading()
+            binding.progressBar.visibility = View.VISIBLE
         }
+        binding.timeTitleTextView.isEnabled = status
+        binding.timeValTextView.isEnabled = status
+        binding.ledChip.isEnabled = status
     }
 
-    private fun setReady()
+    override fun onDestroy()
     {
-        progressBar.visibility = View.INVISIBLE
-    }
-
-    private fun setLoading()
-    {
-        progressBar.visibility = View.VISIBLE
-    }
-
-    override fun onDestroy() {
         super.onDestroy()
         presenter.detachView()
     }
