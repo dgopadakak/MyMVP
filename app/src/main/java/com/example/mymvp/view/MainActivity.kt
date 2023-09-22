@@ -2,6 +2,7 @@ package com.example.mymvp.view
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.mymvp.appComponent
 import com.example.mymvp.databinding.ActivityMainBinding
@@ -69,6 +70,11 @@ class MainActivity : AppCompatActivity(), Viewable
                 binding.ledChip.isEnabled = true
             }
         }
+    }
+
+    override fun makeToast(text: String)
+    {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 
     override fun onDestroy()

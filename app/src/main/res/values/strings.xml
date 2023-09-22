@@ -4,8 +4,6 @@
     <string name="time_val_default">Загрузка…</string>
     <string name="reconnect_button">Переподключиться</string>
     <string name="led_chip">Светодиод</string>
-    <string name="from_led_topic">from/led</string>
-    <string name="from_time_topic">from/time</string>
-    <string name="to_led_topic">to/led</string>
-    <string name="to_time_topic">to/time</string>
+    <string name="publish_done">Отправка выполнена</string>
+    <string name="publish_error">Ошибка отправки</string>
 </resources>

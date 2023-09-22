@@ -1,5 +1,6 @@
 package com.example.mymvp.presenter
 
+import com.example.mymvp.R
 import com.example.mymvp.model.Model
 import com.example.mymvp.view.Viewable
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
@@ -7,6 +8,11 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class Presenter (private val model: Model)
 {
+    companion object
+    {
+        private const val FROM_LED_TOPIC = "from/led"
+        private const val FROM_TIME_TOPIC = "from/time"
+    }
     private var view: Viewable? = null
     private val disposeBag = CompositeDisposable()
 
@@ -16,6 +22,7 @@ class Presenter (private val model: Model)
     private var timeReceived = false
     private var ledStatusReceived = false
     private var ledStatusWaiting = false
+    private var ledStatus = false
 
     fun attachView(view: Viewable)
     {
@@ -27,7 +34,19 @@ class Presenter (private val model: Model)
 
     fun ledChipClicked()
     {
-        TODO()
+        view!!.changeChipEnabled(false)
+        ledStatusWaiting = true
+        disposeBag.add(
+            model.setLedStatus(!ledStatus)
+                .subscribe(
+                    {
+                        view!!.makeToast(R.string.publish_done.toString())
+                    },
+                    {
+                        view!!.makeToast(R.string.publish_error.toString())
+                    }
+                )
+        )
     }
 
     fun reconnectButtonClicked()
@@ -134,31 +153,28 @@ class Presenter (private val model: Model)
     private fun createSubscribers()
     {
         disposeBag.add(
-            model.timeDataSource()
+            model.dataSource()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        timeReceived = true
-                        view!!.showTime("$it мин.")
-                        checkIsReady()
-                    },
-                    {
-                        showError()
-                    }
-                )
-        )
-        disposeBag.add(
-            model.ledStatusDataSource()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        ledStatusReceived = true
-                        view!!.showLedStatus(it)
-                        if (ledStatusWaiting)
+                        if (it.first == FROM_LED_TOPIC)
                         {
-                            view!!.changeChipEnabled(true)
+                            ledStatusReceived = true
+                            ledStatus = it.second == "true"
+                            view!!.showLedStatus(ledStatus)
+                            if (ledStatusWaiting)
+                            {
+                                view!!.changeChipEnabled(true)
+                                ledStatusWaiting = false
+                            }
+                            checkIsReady()
                         }
-                        checkIsReady()
+                        else if (it.first == FROM_TIME_TOPIC)
+                        {
+                            timeReceived = true
+                            view!!.showTime("$it мин.")
+                            checkIsReady()
+                        }
                     },
                     {
                         showError()
