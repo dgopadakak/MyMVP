@@ -70,7 +70,7 @@ class Model(private val mqttHelper: MqttHelper)
         }
     }
 
-    fun ledStatusDataSource(): Observable<Boolean>
+    fun dataSource(): Observable<Boolean>
     {
         return Observable.create { subscriber ->
             disposeBag.add(
@@ -88,8 +88,6 @@ class Model(private val mqttHelper: MqttHelper)
                             }
                         },
                         {
-                            //connectionStatus = false
-                            //subscribeStatus = false
                             subscriber.onError(it)
                         }
                     )
@@ -108,8 +106,6 @@ class Model(private val mqttHelper: MqttHelper)
                             subscriber.onNext(it.second)
                         },
                         {
-                            //connectionStatus = false
-                            //subscribeStatus = false
                             subscriber.onError(it)
                         }
                     )
@@ -125,11 +121,9 @@ class Model(private val mqttHelper: MqttHelper)
                     .subscribeOn(Schedulers.newThread())
                     .subscribe(
                         {
-                            //connectionStatus = true
                             subscriber.onComplete()
                         },
                         {
-                            //connectionStatus = false
                             subscriber.onError(it)
                         }
                     )
@@ -145,11 +139,9 @@ class Model(private val mqttHelper: MqttHelper)
                     .subscribeOn(Schedulers.newThread())
                     .subscribe(
                         {
-                            //subscribeStatus = true
                             subscriber.onComplete()
                         },
                         {
-                            //subscribeStatus = false
                             subscriber.onError(it)
                         }
                     )
