@@ -44,6 +44,8 @@ class Presenter (private val model: Model)
                     },
                     {
                         view!!.makeToast(R.string.publish_error.toString())
+                        view!!.changeChipEnabled(true)
+                        ledStatusWaiting = false
                     }
                 )
         )
