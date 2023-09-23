@@ -8,11 +8,11 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class Presenter (private val model: Model)
 {
-    companion object
-    {
-        private const val FROM_LED_TOPIC = "from/led"
-        private const val FROM_TIME_TOPIC = "from/time"
-    }
+//    companion object
+//    {
+//        private const val FROM_LED_TOPIC = "from/led"
+//        private const val FROM_TIME_TOPIC = "from/time"
+//    }
     private var view: Viewable? = null
     private val disposeBag = CompositeDisposable()
 
@@ -90,6 +90,7 @@ class Presenter (private val model: Model)
                 .subscribe(
                     {
                         attemptsToSubscribe = 0
+                        model.startListening()
                         createSubscribers()
                         doRequests()
                     },
@@ -152,31 +153,68 @@ class Presenter (private val model: Model)
         )
     }
 
+//    private fun createSubscribers()
+//    {
+//        disposeBag.add(
+//            model.dataSource()
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe(
+//                    {
+//                        if (it.first == FROM_LED_TOPIC)
+//                        {
+//                            ledStatusReceived = true
+//                            ledStatus = it.second == "true"
+//                            view!!.showLedStatus(ledStatus)
+//                            if (ledStatusWaiting)
+//                            {
+//                                view!!.changeChipEnabled(true)
+//                                ledStatusWaiting = false
+//                            }
+//                            checkIsReady()
+//                        }
+//                        else if (it.first == FROM_TIME_TOPIC)
+//                        {
+//                            timeReceived = true
+//                            view!!.showTime("$it мин.")
+//                            checkIsReady()
+//                        }
+//                    },
+//                    {
+//                        showError()
+//                    }
+//                )
+//        )
+//    }
+
     private fun createSubscribers()
     {
         disposeBag.add(
-            model.dataSource()
+            model.timeDataSource()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        if (it.first == FROM_LED_TOPIC)
+                        timeReceived = true
+                        view!!.showTime("$it мин.")
+                        checkIsReady()
+                    },
+                    {
+                        showError()
+                    }
+                )
+        )
+        disposeBag.add(
+            model.ledStatusDataSource()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        ledStatusReceived = true
+                        view!!.showLedStatus(it)
+                        if (ledStatusWaiting)
                         {
-                            ledStatusReceived = true
-                            ledStatus = it.second == "true"
-                            view!!.showLedStatus(ledStatus)
-                            if (ledStatusWaiting)
-                            {
-                                view!!.changeChipEnabled(true)
-                                ledStatusWaiting = false
-                            }
-                            checkIsReady()
+                            view!!.changeChipEnabled(true)
+                            ledStatusWaiting = false
                         }
-                        else if (it.first == FROM_TIME_TOPIC)
-                        {
-                            timeReceived = true
-                            view!!.showTime("$it мин.")
-                            checkIsReady()
-                        }
+                        checkIsReady()
                     },
                     {
                         showError()

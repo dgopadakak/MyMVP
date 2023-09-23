@@ -3,6 +3,7 @@ package com.example.mymvp.model
 import android.content.Context
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.observables.ConnectableObservable
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.IMqttActionListener
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
@@ -79,7 +80,7 @@ class MqttHelper(context: Context)
         }
     }
 
-    fun receiveMessages(): Observable<Pair<String, String>>
+    fun receiveMessages(): ConnectableObservable<Pair<String, String>>
     {
         return Observable.create { subscriber ->
             mqttAndroidClient.setCallback(object : MqttCallback
@@ -106,7 +107,7 @@ class MqttHelper(context: Context)
                     // методом publishMessages (следующий метод), доставлено
                 }
             })
-        }
+        }.publish()
     }
 
     fun publishMessages(topic: String, data: String): Completable

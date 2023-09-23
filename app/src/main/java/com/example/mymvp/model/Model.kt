@@ -11,6 +11,8 @@ class Model(private val mqttHelper: MqttHelper)
     {
         private const val TO_LED_TOPIC = "to/led"
         private const val TO_TIME_TOPIC = "to/time"
+        private const val FROM_LED_TOPIC = "from/led"
+        private const val FROM_TIME_TOPIC = "from/time"
     }
     private val disposeBag = CompositeDisposable()
 
@@ -68,17 +70,41 @@ class Model(private val mqttHelper: MqttHelper)
         }
     }
 
-    fun dataSource(): Observable<Pair<String, String>>
+    fun startListening()
+    {
+        mqttHelper.receiveMessages().connect()
+    }
+
+    fun ledStatusDataSource(): Observable<Boolean>
     {
         return Observable.create { subscriber ->
             disposeBag.add(
                 mqttHelper.receiveMessages()
+                    .filter { it.first == FROM_LED_TOPIC }
                     .subscribe(
                         {
-                            subscriber.onNext(it)
+                            subscriber.onNext(it.second == "true")
                         },
                         {
                             subscriber.onError(it)
+                        }
+                    )
+            )
+        }
+    }
+
+    fun timeDataSource(): Observable<String>
+    {
+        return Observable.create { subscriber ->
+            disposeBag.add(
+                mqttHelper.receiveMessages()
+                    .filter { it.first == FROM_TIME_TOPIC }
+                    .subscribe(
+                        {
+                            subscriber.onNext(it.second)
+                        },
+                        {
+
                         }
                     )
             )
