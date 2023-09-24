@@ -3,6 +3,7 @@ package com.example.mymvp.model
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.observables.ConnectableObservable
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 class Model(private val mqttHelper: MqttHelper)
@@ -15,6 +16,7 @@ class Model(private val mqttHelper: MqttHelper)
         private const val FROM_TIME_TOPIC = "from/time"
     }
     private val disposeBag = CompositeDisposable()
+    private lateinit var listenerConnectableObservable: ConnectableObservable<Pair<String, String>>
 
     fun setLedStatus(status: Boolean): Completable
     {
@@ -72,14 +74,15 @@ class Model(private val mqttHelper: MqttHelper)
 
     fun startListening()
     {
-        mqttHelper.receiveMessages().connect()
+        listenerConnectableObservable = mqttHelper.receiveMessages()
+        listenerConnectableObservable.connect()
     }
 
     fun ledStatusDataSource(): Observable<Boolean>
     {
         return Observable.create { subscriber ->
             disposeBag.add(
-                mqttHelper.receiveMessages()
+                listenerConnectableObservable
                     .filter { it.first == FROM_LED_TOPIC }
                     .subscribe(
                         {
@@ -97,14 +100,14 @@ class Model(private val mqttHelper: MqttHelper)
     {
         return Observable.create { subscriber ->
             disposeBag.add(
-                mqttHelper.receiveMessages()
+                listenerConnectableObservable
                     .filter { it.first == FROM_TIME_TOPIC }
                     .subscribe(
                         {
                             subscriber.onNext(it.second)
                         },
                         {
-
+                            subscriber.onError(it)
                         }
                     )
             )

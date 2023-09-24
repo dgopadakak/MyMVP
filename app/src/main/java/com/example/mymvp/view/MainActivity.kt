@@ -35,7 +35,9 @@ class MainActivity : AppCompatActivity(), Viewable
 
     override fun showLedStatus(status: Boolean)
     {
+        binding.ledChip.isCheckable = true
         binding.ledChip.isChecked = status
+        //binding.ledChip.isCheckable = false
     }
 
     override fun changeChipEnabled(status: Boolean)

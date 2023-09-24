@@ -153,39 +153,6 @@ class Presenter (private val model: Model)
         )
     }
 
-//    private fun createSubscribers()
-//    {
-//        disposeBag.add(
-//            model.dataSource()
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(
-//                    {
-//                        if (it.first == FROM_LED_TOPIC)
-//                        {
-//                            ledStatusReceived = true
-//                            ledStatus = it.second == "true"
-//                            view!!.showLedStatus(ledStatus)
-//                            if (ledStatusWaiting)
-//                            {
-//                                view!!.changeChipEnabled(true)
-//                                ledStatusWaiting = false
-//                            }
-//                            checkIsReady()
-//                        }
-//                        else if (it.first == FROM_TIME_TOPIC)
-//                        {
-//                            timeReceived = true
-//                            view!!.showTime("$it мин.")
-//                            checkIsReady()
-//                        }
-//                    },
-//                    {
-//                        showError()
-//                    }
-//                )
-//        )
-//    }
-
     private fun createSubscribers()
     {
         disposeBag.add(
@@ -208,6 +175,7 @@ class Presenter (private val model: Model)
                 .subscribe(
                     {
                         ledStatusReceived = true
+                        ledStatus = it
                         view!!.showLedStatus(it)
                         if (ledStatusWaiting)
                         {
