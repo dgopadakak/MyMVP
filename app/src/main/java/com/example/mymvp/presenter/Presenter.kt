@@ -8,11 +8,6 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 
 class Presenter (private val model: Model)
 {
-//    companion object
-//    {
-//        private const val FROM_LED_TOPIC = "from/led"
-//        private const val FROM_TIME_TOPIC = "from/time"
-//    }
     private var view: Viewable? = null
     private val disposeBag = CompositeDisposable()
 
@@ -32,9 +27,9 @@ class Presenter (private val model: Model)
         startConnection()
     }
 
-    fun ledChipClicked()
+    fun ledSwitchClicked()
     {
-        view!!.changeChipEnabled(false)
+        view!!.changeSwitchEnabled(false)
         ledStatusWaiting = true
         disposeBag.add(
             model.setLedStatus(!ledStatus)
@@ -44,7 +39,7 @@ class Presenter (private val model: Model)
                     },
                     {
                         view!!.makeToast(R.string.publish_error.toString())
-                        view!!.changeChipEnabled(true)
+                        view!!.changeSwitchEnabled(true)
                         ledStatusWaiting = false
                     }
                 )
@@ -179,7 +174,7 @@ class Presenter (private val model: Model)
                         view!!.showLedStatus(it)
                         if (ledStatusWaiting)
                         {
-                            view!!.changeChipEnabled(true)
+                            view!!.changeSwitchEnabled(true)
                             ledStatusWaiting = false
                         }
                         checkIsReady()

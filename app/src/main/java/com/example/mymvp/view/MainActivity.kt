@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), Viewable
         setContentView(view)
         appComponent.inject(this)
 
-        binding.ledChip.setOnClickListener { presenter.ledChipClicked() }
+        binding.ledSwitch.setOnClickListener { presenter.ledSwitchClicked() }
 
         presenter.attachView(this)
     }
@@ -35,14 +35,12 @@ class MainActivity : AppCompatActivity(), Viewable
 
     override fun showLedStatus(status: Boolean)
     {
-        binding.ledChip.isCheckable = true
-        binding.ledChip.isChecked = status
-        //binding.ledChip.isCheckable = false
+        binding.ledSwitch.isChecked = status
     }
 
-    override fun changeChipEnabled(status: Boolean)
+    override fun changeSwitchEnabled(status: Boolean)
     {
-        binding.ledChip.isEnabled = status
+        binding.ledSwitch.isEnabled = status
     }
 
     /**
@@ -57,19 +55,19 @@ class MainActivity : AppCompatActivity(), Viewable
                 binding.progressBar.visibility = View.INVISIBLE
                 binding.timeTitleTextView.isEnabled = false
                 binding.timeValTextView.isEnabled = false
-                binding.ledChip.isEnabled = false
+                binding.ledSwitch.isEnabled = false
             }
             1 -> {  // Подключение
                 binding.progressBar.visibility = View.VISIBLE
                 binding.timeTitleTextView.isEnabled = false
                 binding.timeValTextView.isEnabled = false
-                binding.ledChip.isEnabled = false
+                binding.ledSwitch.isEnabled = false
             }
             2 -> {  // Подключено
                 binding.progressBar.visibility = View.INVISIBLE
                 binding.timeTitleTextView.isEnabled = true
                 binding.timeValTextView.isEnabled = true
-                binding.ledChip.isEnabled = true
+                binding.ledSwitch.isEnabled = true
             }
         }
     }
