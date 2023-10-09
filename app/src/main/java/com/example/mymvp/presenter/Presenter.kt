@@ -26,7 +26,7 @@ class Presenter (private val model: Model)
         startConnection()
     }
 
-    fun ledSwitchClicked()
+    fun ledSwitchCheckedChange()
     {
         view!!.changeSwitchEnabled(false)
         ledStatusWaiting = true

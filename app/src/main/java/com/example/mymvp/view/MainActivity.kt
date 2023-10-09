@@ -11,6 +11,7 @@ import com.example.mymvp.databinding.ActivityMainBinding
 import com.example.mymvp.presenter.Presenter
 import javax.inject.Inject
 
+
 class MainActivity : AppCompatActivity(), Viewable
 {
     @Inject
@@ -25,7 +26,9 @@ class MainActivity : AppCompatActivity(), Viewable
         setContentView(view)
         appComponent.inject(this)
 
-        binding.ledSwitch.setOnClickListener { presenter.ledSwitchClicked() }
+        binding.ledSwitch.setOnCheckedChangeListener { _, _ ->
+            presenter.ledSwitchCheckedChange()
+        }
 
         presenter.attachView(this)
     }
