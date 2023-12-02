@@ -1,20 +1,23 @@
 package com.example.mymvp.view
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.mymvp.R
 import com.example.mymvp.appComponent
 import com.example.mymvp.databinding.ActivityMainBinding
 import com.example.mymvp.presenter.Presenter
 import javax.inject.Inject
+
 
 class MainActivity : AppCompatActivity(), Viewable
 {
     @Inject
     lateinit var presenter: Presenter
     private lateinit var binding: ActivityMainBinding
-
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -23,7 +26,9 @@ class MainActivity : AppCompatActivity(), Viewable
         setContentView(view)
         appComponent.inject(this)
 
-        binding.ledSwitch.setOnClickListener { presenter.ledSwitchClicked() }
+        binding.ledSwitch.setOnCheckedChangeListener { _, _ ->
+            presenter.ledSwitchCheckedChange()
+        }
 
         presenter.attachView(this)
     }
@@ -72,8 +77,10 @@ class MainActivity : AppCompatActivity(), Viewable
         }
     }
 
-    override fun makeToast(text: String)
+    override fun makeToast(publishDone: Boolean)
     {
+        val text = if (publishDone) getString(R.string.publish_done)
+            else getString(R.string.publish_error)
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
     }
 
