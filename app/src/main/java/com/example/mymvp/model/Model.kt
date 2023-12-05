@@ -152,7 +152,7 @@ class Model(private val mqttHelper: MqttHelper)
 
     fun kill()
     {
-        disposeBag.add(mqttHelper.disconnect().subscribe())
+        mqttHelper.disconnect()
         disposeBag.dispose()
     }
 }
